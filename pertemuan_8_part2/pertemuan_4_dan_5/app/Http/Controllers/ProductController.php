@@ -97,6 +97,11 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $product = Products::find($id);
+        if ($product) {
+            $product->delete();
+            return redirect()->route('product')->with('success', 'product berhasil dihapus.');
+        }
+        return redirect()->route('product')->with('error', 'product tidak ditemukan.');
     }
 }

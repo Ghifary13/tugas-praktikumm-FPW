@@ -10,11 +10,31 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Products::all();
+        // Ambil semua produk
+        $query = Products::query();
+
+
+        // Cek apakah ada parameter 'search' di request
+        if ($request->has('search') && $request->search != '') {
+
+
+            // Melakukan pencarian berdasarkan nama produk atau informasi
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%');
+            });
+        }
+
+
+        // Ambil produk dengan paginasi
+        $products = $query->paginate(2);
+
+
         return view("master-data.product-master.index-product", compact('products'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -53,7 +73,8 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Products::findorfail($id);
+        return view('master-data.product-master.detail-product', compact('product'));
     }
 
     /**

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ProductsExport;
 use Illuminate\Http\Request;
 use App\Models\Products;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -124,5 +127,17 @@ class ProductController extends Controller
             return redirect()->route('product')->with('success', 'product berhasil dihapus.');
         }
         return redirect()->route('product')->with('error', 'product tidak ditemukan.');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new ProductsExport, 'product.xlsx');
+    }
+
+    public function exportPDF()
+    {
+        $products = Products::all(); // Ambil semua data produk
+        $pdf = Pdf::loadView('exports.products-pdf', compact('products'));
+        return $pdf->download('products.pdf'); // Unduh file PDF
     }
 }
